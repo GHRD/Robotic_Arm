@@ -2,7 +2,7 @@ from Model import RoboticArm
 import numpy as np
 
 class PID:
-    def __init__(self, kp=1.0, ki=0.0, kd=0.0, target=np.zeros(3), dt=0.01):
+    def __init__(self, kp=1.0, ki=0.50, kd=0.50, target=np.zeros(3), dt=0.01):
         self.kp = kp  # proportional gain
         self.ki = ki  # integral gain
         self.kd = kd  # derivative gain

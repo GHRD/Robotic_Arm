@@ -9,11 +9,11 @@ target_pos = np.array([1, 1, 1])
 # Initialize the robotic arm and the PID controller
 arm = RoboticArm()
 pid = PID()
-#pidcontroller = PIDController()
+#Pidcontroller = PIDController(1,0,0)
 
 # Set the simulation time and time step
 t_end = 10
-dt = 1
+dt = 0.1
 t = np.arange(0, t_end, dt)
 
 # Initialize arrays for plotting data
@@ -25,12 +25,9 @@ print("------------------------------------------------")
 for i in range(len(t)):
     # Calculate the PID control output
     control_output = pid.Calculate(arm.forward_kinematics(arm.joint_angles)[0], target_pos, dt)
-    print('-----------step:', i)
-    print(control_output)
-    # Update the joint angles using the control output
+     # Update the joint angles using the control output
     upd = arm.update_joint_angles(control_output, dt)
-    print(upd)
-    # Store data for plotting
+     # Store data for plotting
     setpoint[i] = target_pos
     actual_pos[i] = arm.forward_kinematics(arm.joint_angles)[0]
     error[i] = pid.prev_error

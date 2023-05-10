@@ -91,15 +91,7 @@ class RoboticArm:
         return J_T
         
         # Define the error function
-    def error_function(self, goal_pos):
-            # Compute the current end-effector position
-        current_pos = self.forward_kinematics()
 
-            # Compute the error as the difference between the current position and the goal position
-        error = goal_pos - current_pos
-
-            # Return the error vector
-        return error
 # Define the update_joints_angles function
     # def update_joint_angles(self, dt):
     #     # Update joint angles using forward kinematics and the Jacobian transpose method
@@ -137,6 +129,16 @@ class RoboticArm:
 
     #         # Increment the iteration counter
     #         i += 1
+    def error_function(self, goal_pos):
+            # Compute the current end-effector position
+        pos = self.forward_kinematics(self.joint_angles)[0]
+
+            # Compute the error as the difference between the current position and the goal position
+        error = goal_pos - pos
+
+            # Return the error vector
+        return error
+
     def update_joint_angles(self, joint_angles, dt):
     # Update joint angles using forward kinematics and the Jacobian transpose method
     # Set the maximum step size for each iteration
@@ -144,16 +146,18 @@ class RoboticArm:
 
     # Set the desired end-effector position
         target_pos = self.forward_kinematics(joint_angles)[0]
+        pos_d = self.forward_kinematics(joint_angles)[0]
 
     # Set the threshold for the error between the current and desired end-effector position
         error_threshold = 1e-4
 
     # Set the maximum number of iterations
-        max_iter = 100
+        max_iter = 1000
 
     # Initialize the error to a large value
-        error = np.inf
-
+        error = self.error_function(pos_d)
+        #error = 10000
+        print(error)
     # Initialize the iteration counter
         i = 0
 
@@ -161,14 +165,11 @@ class RoboticArm:
         while np.linalg.norm(error) > error_threshold and i < max_iter:
         # Calculate the Jacobian transpose
             J_T = self.J_T(self.joint_angles)
-            print('update: ',i)
-        # Calculate the error between the current and desired end-effector positions
+         # Calculate the error between the current and desired end-effector positions
             error = target_pos - self.forward_kinematics(self.joint_angles)[0]
-            print('--------------error: ',error)
-        # Calculate the step to update the joint angles
+         # Calculate the step to update the joint angles
             delta_q = J_T @ joint_angles * step_size
-            print('Delta==============',delta_q)
-        # Update the joint angles
+         # Update the joint angles
             self.joint_angles += delta_q
 
         # Increment the iteration counter
